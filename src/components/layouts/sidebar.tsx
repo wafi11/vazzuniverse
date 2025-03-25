@@ -1,26 +1,31 @@
-'use client';
-import { Button } from '@/components/ui/button';
-import SidebarLink from '@/components/ui/sidebar-link';
-import { URL_LOGO } from '@/constants';
+"use client";
+import { Button } from "@/components/ui/button";
+import SidebarLink from "@/components/ui/sidebar-link";
+import { URL_LOGO } from "@/constants";
+import { User } from "@/types/schema/user";
 import {
   ArrowDown,
   Calculator,
   Gamepad2,
   ListOrdered,
+  LogIn,
   LogOut,
   Search,
   Trophy,
   X,
-} from 'lucide-react';
-import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+} from "lucide-react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { signOut } from 'next-auth/react';
+import Link from "next/link";
 
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
+  user?: User;
 }
 
-export function Sidebar({ open, onClose }: SidebarProps) {
+export function Sidebar({ open, onClose, user }: SidebarProps) {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [openCalculator, setOpenCalculator] = useState(false);
 
@@ -35,34 +40,34 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose, open]);
 
   // Handle escape key to close
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && open) {
+      if (event.key === "Escape" && open) {
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleEscKey);
+    document.addEventListener("keydown", handleEscKey);
     return () => {
-      document.removeEventListener('keydown', handleEscKey);
+      document.removeEventListener("keydown", handleEscKey);
     };
   }, [onClose, open]);
 
   useEffect(() => {
     if (open) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [open]);
 
@@ -70,7 +75,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
     <div
       ref={sidebarRef}
       className={`fixed top-0 left-0 h-full w-72 text-white shadow-lg z-50 transform bg-background transition-transform duration-300 ease-in-out ${
-        open ? 'translate-x-0' : '-translate-x-full'
+        open ? "translate-x-0" : "-translate-x-full"
       }`}
       aria-hidden={!open}
     >
@@ -110,7 +115,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             >
               Daftar Harga
             </SidebarLink>
-            <SidebarLink href="/find" icon={<Trophy className="h-4 w-4" />}>
+            <SidebarLink href="/leaderboard" icon={<Trophy className="h-4 w-4" />}>
               Leaderboard
             </SidebarLink>
             <SidebarLink href="/find" icon={<Search className="h-4 w-4" />}>
@@ -129,7 +134,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 </div>
                 <ArrowDown
                   className={`h-4 w-4 transition-transform ${
-                    openCalculator ? 'rotate-180' : ''
+                    openCalculator ? "rotate-180" : ""
                   }`}
                 />
               </button>
@@ -147,16 +152,33 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </nav>
         </div>
 
-        {/* Sidebar footer */}
         <div className="p-4 border-t">
-          <Button
-            variant="outline"
-            className="w-full justify-start bg-white text-black"
-            size="sm"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Keluar
-          </Button>
+          {user ? (
+            <Button
+              variant="outline"
+              className="w-full justify-start bg-white text-black"
+              size="sm"
+              onSelect={(e) => {
+                e.preventDefault();
+                signOut({ callbackUrl: '/' });
+              }}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Keluar
+            </Button>
+          ) : (
+            <Link href={'/auth/login'}>
+            <Button
+              variant="outline"
+              className="w-full justify-start bg-white text-black"
+              size="sm"
+              
+              >
+              <LogIn className="mr-2 h-4 w-4" />
+              Masuk
+            </Button>
+              </Link>
+          )}
         </div>
       </div>
     </div>

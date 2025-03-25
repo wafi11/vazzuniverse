@@ -64,10 +64,6 @@ export const getStatusConfig = (status: string) => {
     const [copied, setCopied] = useState<{id: string, value: boolean}>({id: "", value: false})
     const [timeLeft, setTimeLeft] = useState<string>("")
             
-          // Store Duitku's reference separately
-          const urlPaymentMethods = ['DA', 'OV', 'SA', 'QR']; // DANA, OVO, ShopeePay, QRIS
-          
-     // Determine payment type based on payment method
   const determinePaymentType = (): "VA" | "URL" | "OTHER" => {
     if (!data.pembayaran) return "OTHER"
     
@@ -99,9 +95,18 @@ export const getStatusConfig = (status: string) => {
 
     const calculateTimeLeft = () => {
       const createTime = new Date(data.pembayaran?.createdAt || "").getTime()
-      const expireTime = createTime + (3 * 60 * 60 * 1000) // 3 hours in milliseconds
+      const expireTime = createTime + (3 * 60 * 60 * 1000) //  for ewallet 
+      const expiredTimeVa  =  createTime  + (24 * 60 * 60 *1000) // for vanumber44
       const now = new Date().getTime()
-      const difference = expireTime - now
+
+      const paymentType  = determinePaymentType()
+      let difference  : number
+      if(paymentType === "VA"){
+        difference =  expiredTimeVa - now
+      } else {
+        difference =  expireTime - now
+      }
+
 
       if (difference <= 0) {
         return "Kedaluwarsa"

@@ -15,7 +15,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,7 +27,9 @@ services:
     container_name: vazzuniverse_production
     restart: always
     ports:
-      - "4000:4000"
+      - "3000:3000"
+    volumes:
+      - .env:/app/.env  
     env_file:
       - .env
     depends_on:
@@ -35,25 +37,23 @@ services:
         condition: service_healthy
     networks:
       - app-network
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin:5.2.1
+  #   restart: always
+  #   ports:
+  #     - "8081:80"
+  #   environment:
+  #     - PMA_HOST=mysql
+  #     - PMA_PORT=3306
+  #     - MYSQL_ROOT_PASSWORD=rootpassword
+  #     - UPLOAD_LIMIT=100M
+  #   depends_on:
+  #     mysql:
+  #         condition: service_healthy
+  #   networks:
+  #     - app-network
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    container_name: phpmyadmin
-    restart: always
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: rootpassword
-      UPLOAD_LIMIT: 50M
-      POST_MAX_SIZE: 50M
-      MEMORY_LIMIT: 256M
-    ports:
-      - "8081:80"
-    depends_on:
-      - mysql
-    networks:
-      - app-network
-
+      
 networks:
   app-network:
     driver: bridge

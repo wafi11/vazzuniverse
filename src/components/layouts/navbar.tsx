@@ -48,7 +48,7 @@ export function Navbar({ user }: { user?: User }) {
       </nav>
 
       {/* Sidebar */}
-      <Sidebar open={openSidebar} onClose={() => setOpenSidebar(false)} />
+      <Sidebar open={openSidebar} onClose={() => setOpenSidebar(false)} user={user} />
 
       {/* Backdrop for sidebar */}
       {openSidebar && (

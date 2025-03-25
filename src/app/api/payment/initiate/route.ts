@@ -126,8 +126,6 @@ export async function POST(req: NextRequest) {
       noWa,
       voucherCode,
       serverId,
-      typeTransaksi,
-      game,
       nickname,
       accountId,
     }: RequestPayment = body;
@@ -215,9 +213,9 @@ export async function POST(req: NextRequest) {
             price = voucherResult.price;
             discountAmount = voucherResult.discountAmount;
             appliedVoucherId = voucherResult.appliedVoucherId;
-          } catch (error: any) {
+          } catch (error) {
             return NextResponse.json(
-              { statusCode: 400, message: error.message },
+              { statusCode: 400, message: error instanceof Error ? error.message : `error ${error}` },
               { status: 400 }
             );
           }
@@ -329,6 +327,19 @@ export async function POST(req: NextRequest) {
             }
           });
         
+
+          await handleOrderStatusChange({
+            orderData: {
+              amount: paymentAmount,
+              link: invoiceLink,
+              productName: layanan,
+              status: 'PAID',
+              customerName,
+              method: 'SALDO',
+              orderId: merchantOrderId,
+              whatsapp: noWa.toString()
+            }
+          });
           // Process with Digiflazz
           const digiResponse = await digiflazz.TopUp({
             productCode: layanans?.providerId as string,
@@ -349,23 +360,20 @@ export async function POST(req: NextRequest) {
                 updatedAt: new Date()
               }
             });
+            await handleOrderStatusChange({
+              orderData: {
+                amount: paymentAmount,
+                link: invoiceLink,
+                productName: layanan,
+                status: 'PROCESS',
+                customerName,
+                method: 'SALDO',
+                orderId: merchantOrderId,
+                whatsapp: noWa.toString()
+              }
+            });
           }
 
-          // Send WhatsApp notifications for SALDO payment
-          await handleOrderStatusChange({
-            orderData: {
-              amount: paymentAmount,
-              link: invoiceLink,
-              productName: layanan,
-              status: 'PAID',
-              customerName,
-              method: 'SALDO',
-              orderId: merchantOrderId,
-              whatsapp: noWa.toString()
-            }
-          });
-
-          // Return success response
           return NextResponse.json({
             reference: paymentReference,
             statusCode: "00",

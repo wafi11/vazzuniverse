@@ -183,35 +183,41 @@ export const adminStats = publicProcedure.query(async ({ ctx }) => {
 
 
 export const PembelianAll = router({
-  getId  :  publicProcedure
+  getId: publicProcedure
   .input(
     z.object({
-      merchantOrderId: z.string()
+      merchantOrderId: z.string().nullable()
     })
   )
   .query(async ({ ctx, input }) => {
     const { merchantOrderId } = input;
-   
-    
-    // Find purchase (pembelian) details with related data
+
+    // Periksa apakah merchantOrderId ada
+    if (!merchantOrderId) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Merchant Order ID is required'
+      });
+    }
+
+    // Gunakan findUnique dengan kondisi yang spesifik
     const purchase = await ctx.prisma.pembelian.findUnique({
       where: {
-        orderId: merchantOrderId
+        orderId: merchantOrderId // Pastikan tipe data sesuai
       },
       include: {
-      pembayaran : true,
+        pembayaran: true,
       }
     });
-    
-    if ( !purchase) {
+
+    if (!purchase) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Transaction details not found'
       });
     }
-    
-    // You could also fetch additional related data
-    // For example, if you need layanan details:
+
+    // Fetch layanan details jika diperlukan
     let layananDetails = null;
     if (purchase.layanan) {
       layananDetails = await ctx.prisma.layanan.findFirst({
@@ -220,13 +226,12 @@ export const PembelianAll = router({
         }
       });
     }
-    
-    // Return all the collected data
+
     return {
       purchase,
       layananDetails,
-      // Add any other data you need to return
-    }}),
+    };
+  }),
     getAll: publicProcedure
       .input(
         z.object({

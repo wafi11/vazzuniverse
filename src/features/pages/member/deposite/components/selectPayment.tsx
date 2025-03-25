@@ -2,9 +2,8 @@
 import { useState } from 'react';
 import { trpc } from "@/utils/trpc";
 import { Card, CardContent } from "@/components/ui/card";
-import {  Plus } from "lucide-react";
 import { FormatPrice } from "@/utils/formatPrice";
-;
+
 interface SelectAmountProps {
     amount: number;
     onMethodSelect: (methodId: number,code : string) => void;
@@ -50,7 +49,7 @@ interface SelectAmountProps {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3   gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2   gap-3">
             {methods?.data?.map((method) => {
               const isAvailable = isMethodAvailable(method);
               const totalAmount = calculateTotalAmount(method);
@@ -75,7 +74,7 @@ interface SelectAmountProps {
                           />
                         </div>
                         <div className="text-left">
-                          <h3 className="text-sm">{method.name}</h3>
+                          <h3 className="text-xs">{method.name}</h3>
                           <div className="flex items-center gap-1 mt-1">
                               <div className="text-xs flex items-center text-muted-foreground">
                                 <span className=" text-primary">
@@ -87,13 +86,13 @@ interface SelectAmountProps {
                       </div>
                     </button>
   
-                    {!isAvailable && (
+                    {/* {!isAvailable && (
                       <div className="mt-2 text-xs text-red-500 flex items-center">
                         {amount < (method.min || 0) 
                           ? `Minimal pembayaran ${FormatPrice(method.min || 0)}` 
                           : `Maksimal pembayaran ${FormatPrice(method.max || 0)}`}
                       </div>
-                    )}
+                    )} */}
                   </CardContent>
                 </Card>
               );

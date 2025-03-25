@@ -119,6 +119,12 @@ model Method {
   code       String    @db.VarChar(100) @map("code")
   keterangan String    @db.VarChar(250) @map("keterangan")
   tipe       String    @db.VarChar(225) @map("tipe")
+  min          Int?
+  typeTax      String?  @map("type_tax")
+  taxAdmin     Int?     @map("tax_admin")
+  minExpired   Int?    @default(0)  @map("min_expired")
+  maxExpired   Int?    @default(0)  @map("max_expired")
+  max          Int?
   createdAt  DateTime? @map("created_at")
   updatedAt  DateTime? @map("updated_at")
 
@@ -140,7 +146,7 @@ model Pembayaran {
   orderId        String    @unique @map("order_id")
   harga          String    @map("harga")
   noPembayaran   String?   @db.Text @map("no_pembayaran")
-  noPembeli      String      @map("no_pembeli")
+  noPembeli      String    @map("no_pembeli")
   status         String    @map("status")
   metode         String    @map("metode")
   reference      String?   @map("reference")
@@ -149,6 +155,10 @@ model Pembayaran {
   
   pembelian      Pembelian? @relation("PembayaranToPembelian")
 
+
+  @@index([orderId])    
+  @@index([status])    
+  @@index([orderId, metode, status]) 
   @@map("pembayarans")
 }
 
@@ -178,6 +188,10 @@ model Pembelian {
   
   pembayaran            Pembayaran? @relation("PembayaranToPembelian", fields: [orderId], references: [orderId])
 
+  @@index([orderId])    
+  @@index([username])  
+  @@index([status])    
+  @@index([orderId, username, status])  
   @@map("pembelians")
 }
 
@@ -369,4 +383,26 @@ model VoucherCategory {
   
   @@unique([voucherId, categoryId])
   @@map("voucher_categories")
+}
+
+
+model SystemLog {
+  id           String    @id @default(cuid())
+  parentLogId  String?
+  orderId      String?
+  ref          String
+  type         String  @db.VarChar(20)
+  action       String
+  status       String
+  details      String?   @db.Text 
+  errorMessage String?   @db.Text  
+  metadata     String?   @db.Text
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([orderId])
+  @@index([type])
+  @@index([orderId,type])
+
+  @@map("system_log")
 }

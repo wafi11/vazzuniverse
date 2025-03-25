@@ -10,8 +10,6 @@ import {
 import { Button } from '@/components/ui/button';
 import {
   Wallet,
-  Clock,
-  ArrowUpRight,
   Plus,
   ArrowLeft,
   Loader2,
@@ -27,33 +25,6 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import PendingTransaction from './components/pendingTransaction';
 
-interface Deposit {
-  jumlah: number;
-  createdAt: string | null
-  id: number;
-  metode: string;
-  status: string;
-  updatedAt: string | null
-  username: string;
-}
-
-
-interface PaymentResponse {
-  data : {
-    data : {
-      createdAt: string
-      depositId: string
-      id: number
-      jumlah: number
-      metode: string
-      noPembayaran: string
-      status: string
-      updatedAt: string | null
-      username: string
-    }
-  }
-}
-
 export function UserTopUp() {
   const [amount, setAmount] = useState<string>('');
   const [showPaymentMethods, setShowPaymentMethods] = useState(false);
@@ -61,12 +32,11 @@ export function UserTopUp() {
   const [code, setCode] = useState<string>('');
   const [loading, setIsLoading] = useState(false);
 
-
   // Fetch deposits data
   const { data: depositsData, isLoading: depositsLoading } =
     trpc.deposits.getByUsername.useQuery();
   const deposits = depositsData?.data?.history || [];
-  const user =   depositsData?.data?.user 
+  const user = depositsData?.data?.user 
 
   // Handle amount input change
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,53 +67,66 @@ export function UserTopUp() {
   const handleDeposit = async () => {
     setIsLoading(true);
     try {
-      const response : PaymentResponse = await axios.post('/api/deposit', {
+      const response = await axios.post('/api/deposit', {
         code,
         amount: parseInt(amount),
       });
-      toast.success('Deposit berhasil');
+      toast.success('Deposit Dalam Status Pending', {
+        description: `Anda berhasil menambahkan Rp ${FormatPrice(parseInt(amount))}`,
+        duration: 3000,
+      });
+      // Reset state after successful deposit
+      setShowPaymentMethods(false);
+      setAmount('');
+      setSelectedMethodId(null);
     } catch (error) {
       console.error(error)
-      toast.error('Terjadi kesalahan');
+      toast.error('Gagal Melakukan Deposit', {
+        description: 'Silakan coba lagi atau hubungi customer service',
+        duration: 3000,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Predefined top-up amounts
-  const predefinedAmounts = [10000, 20000, 50000, 100000, 200000, 500000];
+  // Predefined top-up amounts with more granular options
+  const predefinedAmounts = [25000, 50000, 100000, 250000, 500000, 1000000];
 
   // Loading overlay
   if (loading || depositsLoading) {
     return (
-      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-        <div className="bg-card p-6 rounded-lg shadow-lg flex flex-col items-center gap-4">
-          <Loader2 className="h-12 w-12 animate-spin text-primary" />
-          <p className="text-lg font-medium">Sedang Memproses...</p>
+      <div className="fixed inset-0 bg-[#001435]/90 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="bg-white/10 border border-white/20 p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-6 text-center">
+          <Loader2 className="h-16 w-16 animate-spin text-blue-400" />
+          <p className="text-xl font-semibold text-white">Sedang Memproses...</p>
+          <p className="text-sm text-blue-200">Mohon tunggu sebentar</p>
         </div>
       </div>
     );
   }
 
-
-
   return (
-    <main className="container mx-auto px-4 py-10 min-h-screen max-w-7xl relative">
-      {/* Saldo Section */}
-      <Card className="mb-6">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-2xl flex items-center gap-2">
-            <Wallet className="h-6 w-6" />
+    <main className="container mx-auto px-4 py-10 min-h-screen max-w-xl relative bg-[#001435] text-white">
+      {/* Saldo Section with Enhanced Design */}
+      <Card className="mb-8 shadow-lg bg-white/5 border border-white/10">
+        <CardHeader className="pb-3 bg-white/10 rounded-t-xl">
+          <CardTitle className="text-2xl flex items-center gap-3 text-blue-300">
+            <Wallet className="h-7 w-7" />
             Saldo Anda
           </CardTitle>
-          <CardDescription>Saldo tersedia untuk digunakan</CardDescription>
+          <CardDescription className="text-blue-200">
+            Total saldo yang tersedia untuk digunakan
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <p className="text-3xl font-bold">{FormatPrice(user?.balance || 0)}</p>
+        <CardContent className="py-4 bg-white/5 rounded-b-xl">
+          <p className="text-4xl font-bold text-green-400">
+            {FormatPrice(user?.balance || 0)}
+          </p>
         </CardContent>
       </Card>
 
-      {/* Top-Up and History Tabs */}
+      {/* Main Content Area */}
       {showPaymentMethods ? (
         <PaymentMethodSection
           onBack={handleBackToAmount}
@@ -155,22 +138,35 @@ export function UserTopUp() {
         />
       ) : (
         <Tabs defaultValue="topup" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="topup">Top Up</TabsTrigger>
-            <TabsTrigger value="history">Riwayat</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 bg-white/10">
+            <TabsTrigger 
+              value="topup" 
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-300"
+            >
+              Top Up
+            </TabsTrigger>
+            <TabsTrigger 
+              value="history" 
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-blue-300"
+            >
+              Riwayat
+            </TabsTrigger>
           </TabsList>
 
           {/* Top-Up Tab */}
-          <TabsContent value="topup" className="space-y-4 mt-4">
-            <h3 className="text-lg font-medium">Pilih Nominal Top Up</h3>
+          <TabsContent value="topup" className="space-y-6 mt-6">
+            <h3 className="text-xl font-semibold text-blue-200">Pilih Nominal Top Up</h3>
 
-            {/* Predefined Amounts */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {/* Predefined Amounts with Better Grid */}
+            <div className="grid grid-cols-3 gap-3">
               {predefinedAmounts.map((preAmount) => (
                 <Button
                   key={preAmount}
                   variant={amount === preAmount.toString() ? 'default' : 'outline'}
-                  className="h-16"
+                  className={`h-16 rounded-xl shadow-sm transition-all 
+                    ${amount === preAmount.toString() 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-white/10 text-blue-300 border-white/20 hover:bg-white/20'}`}
                   onClick={() => setAmount(preAmount.toString())}
                 >
                   {FormatPrice(preAmount)}
@@ -187,7 +183,7 @@ export function UserTopUp() {
           </TabsContent>
 
           {/* History Tab */}
-          <TabsContent value="history" className="mt-4">
+          <TabsContent value="history" className="mt-6">
             <PendingTransaction data={deposits} />
           </TabsContent>
         </Tabs>
@@ -196,7 +192,7 @@ export function UserTopUp() {
   );
 }
 
-// Payment Method Section
+// Payment Method Section - Enhanced Design
 function PaymentMethodSection({
   onBack,
   onSelect,
@@ -213,31 +209,33 @@ function PaymentMethodSection({
   loading: boolean;
 }) {
   return (
-    <div className="space-y-4">
-      <div className="flex items-center">
+    <div className="space-y-6 text-white">
+      <div className="flex items-center gap-3">
         <Button
-          variant="ghost"
-          className="mr-2 p-2 h-8 w-8"
+          variant="outline"
+          className="p-2 h-10 w-10 rounded-full bg-white/10 border-white/20 text-blue-300 hover:bg-white/20"
           onClick={onBack}
           disabled={loading}
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h2 className="text-lg font-medium">Pilih Metode Pembayaran</h2>
+        <h2 className="text-xl font-semibold text-blue-200">
+          Pilih Metode Pembayaran
+        </h2>
       </div>
       <TooltipProvider>
         <SelectPayment amount={amount} onMethodSelect={onSelect} />
       </TooltipProvider>
       {selectedMethodId && (
-        <div className="mt-4">
+        <div className="mt-6">
           <Button
-            className="w-full"
+            className="w-full rounded-xl py-3 text-base bg-blue-600 hover:bg-blue-700 text-white"
             disabled={loading}
             onClick={onSubmit}
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-3 h-5 w-5 animate-spin" />
                 Memproses...
               </>
             ) : (
@@ -250,7 +248,7 @@ function PaymentMethodSection({
   );
 }
 
-// Custom Amount Input Section
+// Custom Amount Input Section - Improved Design
 function CustomAmountInput({
   amount,
   onChange,
@@ -261,21 +259,27 @@ function CustomAmountInput({
   onSubmit: () => void;
 }) {
   return (
-    <div className="space-y-2 mt-4">
-      <Label htmlFor="custom-amount">Nominal Lainnya</Label>
-      <div className="flex gap-2">
+    <div className="space-y-3">
+      <Label htmlFor="custom-amount" className="text-blue-200">
+        Nominal Lainnya
+      </Label>
+      <div className="flex gap-3">
         <Input
           id="custom-amount"
           type="text"
           placeholder="Masukkan nominal"
           value={amount}
           onChange={onChange}
+          className="rounded-xl py-3 text-base bg-white/10 border-white/20 text-white placeholder-blue-300 focus:border-blue-500"
         />
-        <Button onClick={onSubmit} disabled={!amount || parseInt(amount) <= 0}>
-          <Plus className="mr-2 h-4 w-4" /> Top Up
+        <Button 
+          onClick={onSubmit} 
+          disabled={!amount || parseInt(amount) <= 0}
+          className="rounded-xl px-6 bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          <Plus className="mr-2 h-5 w-5" /> Top Up
         </Button>
       </div>
     </div>
   );
 }
-

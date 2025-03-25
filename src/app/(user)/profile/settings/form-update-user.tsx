@@ -22,7 +22,6 @@ export function FormUpdateUser({ user }: { user: User }) {
     formState: { errors },
   } = useForm<UpdateUser>({
     defaultValues: {
-      username: user.username ?? '',
       name: user.name ?? '',
       whatsapp: user.whatsapp ? parseInt(user.whatsapp) : undefined,
     },
@@ -65,16 +64,6 @@ export function FormUpdateUser({ user }: { user: User }) {
         )}
       </div>
       <div className="space-y-2">
-        <Label htmlFor="username">Username</Label>
-        <Input id="username" {...register('username')} />
-        {errors.username && (
-          <p className="text-sm text-red-500">
-            {errors.username.message?.toString()}
-          </p>
-        )}
-      </div>
-
-      <div className="space-y-2">
         <Label htmlFor="whatsapp">WhatsApp Number</Label>
         <WhatsAppInput
           id="whatsapp"
@@ -88,7 +77,7 @@ export function FormUpdateUser({ user }: { user: User }) {
 
       {updateSuccess && (
         <div className="bg-green-100 text-green-700 px-4 py-2 rounded-md">
-          Profile updated successfully!
+          Profile Update Berhasil
         </div>
       )}
 
@@ -97,7 +86,7 @@ export function FormUpdateUser({ user }: { user: User }) {
         className="bg-orange-500 hover:bg-orange-700"
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Saving...' : 'Save Changes'}
+        {isSubmitting ? 'Menyimpan' : 'Simpan Perubahan'}
       </Button>
     </form>
   );

@@ -125,8 +125,7 @@ export default function AllCategories({ type }: { type: string }) {
                 {/* Animated border effect */}
                 <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary/50 rounded-xl transition-colors duration-300 pointer-events-none"></div>
 
-                {/* Corner accent */}
-                <div className="absolute top-0 right-0 w-0 h-0 border-t-[40px] border-r-[40px] border-t-transparent border-r-primary/0 group-hover:border-r-primary/80 transition-all duration-300"></div>
+         
               </Link>
             ))}
           </section>

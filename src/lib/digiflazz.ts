@@ -105,7 +105,7 @@ export class Digiflazz {
       const data = {
         username: this.username,
         buyer_sku_code: topUpData.productCode,
-        customer_no: customerNo,
+        customer_no: '28928927282asigsauyafgascvtyac',
         ref_id: topUpData.reference,
         trx_id,
         sign: signature,

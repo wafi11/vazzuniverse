@@ -20,7 +20,6 @@ export function TransactionDetails({ data, onBack}: TransactionDetailsProps) {
   const statusConfig = getStatusConfig(data.status);
   const paymentStatusConfig = data.pembayaran ? getStatusConfig(data.pembayaran.status) : statusConfig;
   const isPending = data.pembayaran?.status === "PENDING" || data.pembayaran?.status === "PROCESS";
-
   // Parse timeLeft into hours, minutes, seconds for better display
   const timeLeftParts = timeLeft ? timeLeft.split(":").map((part) => part.trim()) : ["00", "00", "00"];
   const [hours, minutes, seconds] = timeLeftParts.length === 3 ? timeLeftParts : ["00", ...timeLeftParts];
@@ -86,47 +85,47 @@ export function TransactionDetails({ data, onBack}: TransactionDetailsProps) {
                   transition={{ duration: 0.5 }}
                 >
                 <div className={`p-4 rounded-lg bg-[hsl(217,100%,16%)] border border-[hsl(217,100%,20%)]`}>
-  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-    {/* Bagian Kiri: Label "Batas Waktu Pembayaran" */}
-    <div className="flex items-center">
-      <Clock className="h-5 w-5 mr-2 text-white" />
-      <span className="font-medium text-white">Batas Waktu Pembayaran:</span>
-    </div>
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                      {/* Bagian Kiri: Label "Batas Waktu Pembayaran" */}
+                      <div className="flex items-center">
+                        <Clock className="h-5 w-5 mr-2 text-white" />
+                        <span className="font-medium text-white">Batas Waktu Pembayaran:</span>
+                      </div>
 
-    {/* Bagian Kanan: Timer */}
-    <div className="flex items-center gap-2">
-      {/* Jam */}
-      <div className="flex flex-col items-center">
-        <div className="">
-          <span className="text-2xl font-bold text-white">{hours}</span>
-        </div>
-        <span className="text-xs mt-1 text-gray-300">Jam</span>
-      </div>
+                      {/* Bagian Kanan: Timer */}
+                      <div className="flex items-center gap-2">
+                        {/* Jam */}
+                        <div className="flex flex-col items-center">
+                          <div className="">
+                            <span className="text-2xl font-bold text-white">{hours}</span>
+                          </div>
+                          <span className="text-xs mt-1 text-gray-300">Jam</span>
+                        </div>
 
-      {/* Separator ":" */}
-      <span className="text-xl font-bold text-white mt-[-0.5rem]">:</span>
+                        {/* Separator ":" */}
+                        <span className="text-xl font-bold text-white mt-[-0.5rem]">:</span>
 
-      {/* Menit */}
-      <div className="flex flex-col items-center">
-        <div className="">
-          <span className="text-2xl font-bold text-white">{minutes}</span>
-        </div>
-        <span className="text-xs mt-1 text-gray-300">Menit</span>
-      </div>
+                        {/* Menit */}
+                        <div className="flex flex-col items-center">
+                          <div className="">
+                            <span className="text-2xl font-bold text-white">{minutes}</span>
+                          </div>
+                          <span className="text-xs mt-1 text-gray-300">Menit</span>
+                        </div>
 
-      {/* Separator ":" */}
-      <span className="text-xl font-bold text-white mt-[-0.5rem]">:</span>
+                        {/* Separator ":" */}
+                        <span className="text-xl font-bold text-white mt-[-0.5rem]">:</span>
 
-      {/* Detik */}
-      <div className="flex flex-col items-center">
-        <div className="">
-          <span className="text-2xl font-bold text-white">{seconds}</span>
-        </div>
-        <span className="text-xs mt-1 text-gray-300">Detik</span>
-      </div>
-    </div>
-  </div>
-</div>
+                        {/* Detik */}
+                        <div className="flex flex-col items-center">
+                          <div className="">
+                            <span className="text-2xl font-bold text-white">{seconds}</span>
+                          </div>
+                          <span className="text-xs mt-1 text-gray-300">Detik</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               )}
 

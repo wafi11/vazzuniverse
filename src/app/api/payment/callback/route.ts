@@ -6,7 +6,6 @@ import { handleOrderStatusChange } from '@/lib/whatsapp-message';
 
 export async function POST(req: NextRequest) {
   try {
-    // Get callback data from Duitku
     let callbackData;
     const digiflazz = new Digiflazz(DIGI_USERNAME, DIGI_KEY);
 
@@ -32,22 +31,13 @@ export async function POST(req: NextRequest) {
         amount,
         merchantOrderId,       
         productDetail,
-        additionalParam,
         resultCode,
         signature,    
-        paymentCode,
-        merchantUserId,
-        reference,
-        spUserHash,
-        settlementDate,
-        publisherOrderId,
-        sourceAccount
     } = callbackData;
     const baseUrl = process.env.NEXTAUTH_URL || '';
 
     const invoiceLink = `${baseUrl}/invoice?invoice=${merchantOrderId}`;
 
-    // Validate required fields
     if (
       !merchantCode ||
       !merchantOrderId ||
@@ -120,7 +110,7 @@ export async function POST(req: NextRequest) {
         await handleOrderStatusChange({
           orderData: {
             amount: deposit.jumlah,
-            link: '',
+            link: `${process.env.NEXTAUTH_URL}/profile`,
             productName: `DEPOSIT ${user?.username}`,
             status: newStatus,
             customerName : deposit.username,
@@ -208,7 +198,6 @@ export async function POST(req: NextRequest) {
         console.log('Pembelian:', pembelian);
 
         if (layanan && pembelian) {
-      
           const reqtoDigi = await digiflazz.TopUp({
             productCode: layanan.providerId as string,
             userId: pembelian.userId as string,
@@ -234,6 +223,7 @@ export async function POST(req: NextRequest) {
                   updatedAt: new Date()
                 }
               });
+
               await handleOrderStatusChange({
                 orderData: {
                   amount: pembelian?.harga as number,
@@ -274,7 +264,7 @@ export async function POST(req: NextRequest) {
         message: 'Error processing callback',
         error: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 200 } // Return 200 even on error to prevent Duitku from retrying
+      { status: 200 } 
     );
   }
 }

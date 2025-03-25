@@ -137,33 +137,20 @@ export async function UpdateUsers({
   credentials: UpdateUser;
 }): Promise<CreateUserResult> {
   try {
-    const user = await auth();
+    const user = await getProfile();
 
     if (!user) {
       return {
-        message: 'Unauthorized: No active session',
+        message: 'Unauthorized: User Tidak Ditemukan',
         success: false,
       };
     }
 
-    // This check is wrong! You're returning an error if the user exists
-    // Instead, check if the username is already taken by another user
-    if (credentials.username !== user.user.username) {
-      const existingUser = await findUserByUsername(credentials.username);
-      if (existingUser) {
-        return {
-          message: 'Username telah Terpakai',
-          success: false,
-        };
-      }
-    }
-
     const data = await prisma.users.update({
       where: {
-        id: user.user.id,
+        username: user.session.username,
       },
       data: {
-        username: credentials.username,
         name: credentials.name,
         whatsapp: credentials.whatsapp.toString(),
       },
