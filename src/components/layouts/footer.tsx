@@ -36,9 +36,13 @@ export function Footer() {
   }, [])
 
   useEffect(() => {
-    if (containerWidth > 0) {
+    // Tambahkan pengecekan tambahan untuk memastikan data sudah ada
+    if (containerRef.current && paymentMethods.length > 0) {
+      const width = containerRef.current.offsetWidth
+      setContainerWidth(width)
+      
       controls.start({
-        x: [-containerWidth * 0.3, -containerWidth * 1.3],
+        x: [-width * 0.3, -width * 1.3],
         transition: {
           repeat: Number.POSITIVE_INFINITY,
           repeatType: "loop",
@@ -47,8 +51,7 @@ export function Footer() {
         },
       })
     }
-  }, [containerWidth, controls])
-
+  }, [paymentMethods, controls])
   return (
     <footer className="relative pt-20 pb-12" aria-label="Footer Vazzuniverse">
       {/* Decorative elements */}
@@ -64,13 +67,12 @@ export function Footer() {
                 <div className="flex items-center space-x-3">
                   <div className="relative h-16 w-16 overflow-hidden rounded-lg  p-1 shadow-lg">
                     <Image
-                      src={settingWeb?.logo_footer || (settingWeb?.logo_favicon as string)}
+                      src={settingWeb?.logo_footer || "https://res.cloudinary.com/dstvymie8/image/upload/v1741104560/LOGO_VAZZ_STORE_2_dereyt.webp"}
                       alt="Logo Vazzuniverse"
-                      fill
+                      width={100}
+                      height={100}
                       className="object-contain"
-                      onError={(e) => {
-                        e.currentTarget.src = "/placeholder.svg?height=100&width=100"
-                      }}
+                    
                     />
                   </div>
                   <div className="flex flex-col">
@@ -257,7 +259,7 @@ export function Footer() {
                         <Image
                           width={80}
                           height={48}
-                          src={method.images || "/placeholder.svg?height=48&width=80"}
+                          src={method.images}
                           alt={`Pembayaran dengan ${method.name}`}
                           className="h-auto w-auto max-h-full max-w-full object-contain"
                         />
@@ -322,7 +324,6 @@ export function Footer() {
               cipta dilindungi.
             </p>
             <div className="flex items-center gap-6">
-            
               <Link href="/kebijakan-privasi" className="text-xs text-gray-500 hover:text-gray-300">
                 Privasi
               </Link>
@@ -335,7 +336,7 @@ export function Footer() {
       </div>
 
       {/* WhatsApp Button with improved styling */}
-      <WhatsAppButton image={(settingWeb?.logo_cs as string) || "/placeholder.svg?height=48&width=48"} />
+      <WhatsAppButton image={(settingWeb?.logo_cs as string) || "https://res.cloudinary.com/dazayhg7s/image/upload/v1742701209/HELPDESK_ICON_ti2xn7.png"} />
     </footer>
   )
 }

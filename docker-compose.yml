@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   mysql:
     image: mysql:5.7
@@ -5,21 +6,62 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: mydb
+      MYSQL_DATABASE: vazzuniverse
       MYSQL_USER: user
       MYSQL_PASSWORD: userpassword
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./mysql-config:/etc/mysql/conf.d
     ports:
       - "3306:3306"
     networks:
       - app-network
+    command: >
+      --max_connections=200
+      --wait_timeout=28800
+      --interactive_timeout=28800
+      --max_connect_errors=100
+      --innodb_buffer_pool_size=1G
+      --innodb_log_file_size=256M
+      --server-id=1
+      --log-bin=/var/lib/mysql/mysql-bin.log
+      --binlog-format=row
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  backup:
+    image: tiredofit/db-backup
+    restart: always
+    volumes:
+      - ./backups:/backup
+    environment:
+      - DB_TYPE=mysql
+      - DB_HOST=mysql
+      - DB_NAME=vazzuniverse
+      - DB_USER=user
+      - DB_PASS=userpassword
+      - DB_DUMP_FREQ=1440
+      - DB_DUMP_BEGIN=0000
+      - COMPRESSION=GZ
+      - BACKUP_RETENTION=7
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysql     
+    networks:
+      - app-network
+    
   vazzuniverseprod:
     build:
       context: .
@@ -29,31 +71,15 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .env:/app/.env  
+      - .env_production:/app/.env_production  
     env_file:
-      - .env
+      - .env_production
     depends_on:
       mysql:
         condition: service_healthy
     networks:
       - app-network
-  # phpmyadmin:
-  #   image: phpmyadmin/phpmyadmin:5.2.1
-  #   restart: always
-  #   ports:
-  #     - "8081:80"
-  #   environment:
-  #     - PMA_HOST=mysql
-  #     - PMA_PORT=3306
-  #     - MYSQL_ROOT_PASSWORD=rootpassword
-  #     - UPLOAD_LIMIT=100M
-  #   depends_on:
-  #     mysql:
-  #         condition: service_healthy
-  #   networks:
-  #     - app-network
 
-      
 networks:
   app-network:
     driver: bridge

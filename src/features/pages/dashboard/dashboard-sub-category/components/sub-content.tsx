@@ -16,7 +16,6 @@ import DialogSubCategory, {
 } from './dialog-sub-category';
 
 export default function SubContent({ data }: { data: SubCategories[] }) {
-  console.log(data)
   return (
     <Table>
       <TableHeader>

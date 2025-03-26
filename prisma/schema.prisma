@@ -120,6 +120,7 @@ model Method {
   keterangan String    @db.VarChar(250) @map("keterangan")
   tipe       String    @db.VarChar(225) @map("tipe")
   min          Int?
+  isActive Boolean  @default(true)
   typeTax      String?  @map("type_tax")
   taxAdmin     Int?     @map("tax_admin")
   minExpired   Int?    @default(0)  @map("min_expired")
@@ -390,7 +391,7 @@ model SystemLog {
   id           String    @id @default(cuid())
   parentLogId  String?
   orderId      String?
-  ref          String
+  ref          String?
   type         String  @db.VarChar(20)
   action       String
   status       String

@@ -74,12 +74,10 @@ class PaymentRequestQueue {
           this.queue.delete(key);
         });
   
-        // Simpan promise
         this.queue.set(key, requestPromise);
   
         return await requestPromise;
       } catch (error) {
-        // Hapus request dari active requests jika error
         this.activeRequests.delete(key);
         this.queue.delete(key);
         throw error;
@@ -524,7 +522,6 @@ export async function POST(req: NextRequest) {
           );
 
           const data = response.data;
-          console.log(data,"response duitku")
 
           // Validate response
           if (!data.statusCode) {

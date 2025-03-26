@@ -7,6 +7,7 @@ import { FormatPrice } from '@/utils/formatPrice';
 import { DialogPayment } from './dialog-payment';
 import { Voucher } from '@/types/schema/voucher';
 import { PaymentMethod } from '@/types/payment';
+import { useVoucherValidation } from './components/useVoucherValidation';
 
 export function PaymentsSection({
   amount,
@@ -23,40 +24,23 @@ export function PaymentsSection({
     voucher,
     setVoucher,
   } = usePlansStore();
-  
-  const [isValidatingVoucher, setIsValidatingVoucher] = useState(false);
-  const [voucherError, setVoucherError] = useState<string | null>(null);
-  const [validVoucher, setValidVoucher] = useState<Voucher | null>(null);
-  const [discountedAmount, setDiscountedAmount] = useState<number | null>(null);
 
-  const validateVoucherMutation = trpc.voucher.validateVoucher.useMutation({
-    onSuccess: (data) => {
-      setValidVoucher(data);
-      setVoucherError(null);
-      if (amount && data) {
-        let discount = 0;
-        if (data.discountType === 'PERCENTAGE') {
-          discount = (amount * data.discountValue) / 100;
-          if (data.maxDiscount && discount > data.maxDiscount) {
-            discount = data.maxDiscount;
-          }
-        } else {
-          discount = data.discountValue;
-        }
-        if (discount > amount) {
-          discount = amount;
-        }
-        setDiscountedAmount(amount - discount);
-      }
-      setIsValidatingVoucher(false);
-    },
-    onError: (error) => {
-      setVoucherError(error.message);
-      setValidVoucher(null);
-      setDiscountedAmount(null);
-      setIsValidatingVoucher(false);
-    },
-  });
+  const { 
+    validateVoucherMutation, 
+    isValidatingVoucher, 
+    voucherError, 
+    validVoucher, 
+    discountedAmount ,
+    setIsValidatingVoucher,
+    setDiscountedAmount,
+    setVoucherError,
+    setValidVoucher
+  } = useVoucherValidation(amount ?? 0);
+
+  const handleVoucherValidation = (voucherCode: string) => {
+    setIsValidatingVoucher(true);
+    validateVoucherMutation.mutate({code : voucherCode,amount : amount ?? 0,categoryId  : categories?.id.toString() as string});
+  };
 
   // Kelompokkan metode pembayaran berdasarkan tipe
   const groupedMethods =

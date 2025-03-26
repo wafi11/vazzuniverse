@@ -94,6 +94,8 @@ export function OrderPage({ plans, subCategories }: OrderPageProps) {
     setSelectPlans(plan);
   };
 
+  console.log(plans)
+
   return (
     <div className="bg-blue-900/20 rounded-xl p-6 border border-blue-800/50 space-y-4">
       <h2 className="text-xl font-semibold text-white mb-4">Pilih Package</h2>

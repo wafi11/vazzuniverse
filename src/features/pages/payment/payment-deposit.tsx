@@ -17,7 +17,6 @@ export function PaymentMethodUsingDeposit({
 }: PaymentMethodUsingDepositProps) {
   
   const { data: userData, isLoading } = trpc.member.findMe.useQuery();
-  console.log(userData)
 
   if (isLoading) {
     return (

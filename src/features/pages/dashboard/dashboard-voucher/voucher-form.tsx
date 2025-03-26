@@ -129,7 +129,6 @@ export function VoucherForm({ initialData, onSuccess }: VoucherFormProps) {
         toast.success('create successfully');
       }
     } catch (error) {
-      console.error('Error formatting form data:', error);
       toast.error('Error processing form data');
     }
   }

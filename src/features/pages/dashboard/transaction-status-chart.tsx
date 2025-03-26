@@ -1,55 +1,72 @@
 "use client"
-
 import { useTheme } from "next-themes"
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { Skeleton } from "@/components/ui/skeleton"
 import { FormatPrice } from "@/utils/formatPrice"
 
-export function TransactionStatusChart({ data }: { 
+// Modifikasi tipe data input
+export function TransactionStatusChart({ 
+  data 
+}: { 
   data: {
-    statusDistribution: Array<{
-      status: string,
-      count: number,
-      amount: number,
-      percentage: number
-    }>
-  } 
+    statusCounts: {
+      successful?: number;
+      pending?: number;
+      failed?: number;
+    }
+  }
 }) {
   const { theme } = useTheme()
-  
-  if (!data || !data.statusDistribution || data.statusDistribution.length === 0) {
+
+  // Transformasi data ke format yang dibutuhkan chart
+  const transformStatusData = (statusCounts: {
+    successful?: number;
+    pending?: number;
+    failed?: number;
+  }) => {
+    const totalTransactions = Object.values(statusCounts).reduce((a, b) => (a || 0) + (b || 0), 0)
+
+    return Object.entries(statusCounts)
+      .filter(([_, count]) => count && count > 0)
+      .map(([status, count]) => ({
+        status: status.toUpperCase(),
+        count: count || 0,
+        amount: 0, // Anda bisa menambahkan logika perhitungan amount jika diperlukan
+        percentage: totalTransactions > 0 
+          ? ((count || 0) / totalTransactions * 100).toFixed(1) 
+          : '0'
+      }));
+  }
+
+  // Transform data
+  const chartData = transformStatusData(data.statusCounts)
+
+  if (chartData.length === 0) {
     return <div className="flex h-[300px] items-center justify-center">No data available</div>
   }
-  
-  // Filter out statuses with 0 count to avoid empty segments
-  const chartData = data.statusDistribution.filter((item) => item.count > 0)
-  
+
   // Define colors for each status
   const statusColors = {
-    PENDING: "#FFA500", // Orange
-    PAID: "#3498db",    // Blue
-    PROCCESS: "#9b59b6", // Purple
-    SUCCESS: "#2ecc71", // Green
+    PENDING: "#FFA500",
+    SUCCESSFUL: "#2ecc71", // Green
     FAILED: "#e74c3c",  // Red
   }
-  
+
   // Map status names to more readable labels
   const statusLabels = {
     PENDING: "Pending",
-    PAID: "Paid",
-    PROCCESS: "Processing",
-    SUCCESS: "Success",
+    SUCCESSFUL: "Successful",
     FAILED: "Failed",
   }
-  
+
   // Format data for the chart
   const formattedData = chartData.map((item) => ({
     name: statusLabels[item.status as keyof typeof statusLabels] || item.status,
     value: item.count,
     amount: item.amount,
-    percentage: item.percentage.toFixed(1),
+    percentage: item.percentage,
   }))
-  
+
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">

@@ -80,38 +80,24 @@ export class Digiflazz {
 
       const userId = topUpData.userId?.trim();
       const serverId = topUpData.serverId?.trim();
-
-      // Log for debugging
-      console.log('About to submit:', {
-        userId,
-        serverId,
-        productCode: topUpData.productCode,
-      });
-
-      // Format customer_no based on what Digiflazz expects
+     
       let customerNo;
 
-    
-      // Default format with period separator
       if (userId && serverId) {
         customerNo = `${userId}${serverId}`;
       } else  {
         customerNo = userId;
       } 
 
-      console.log('DATANYA : '  , topUpData.productCode)
-      console.log('DATANYA : '  , customerNo)
-      // Prepare request data
       const data = {
         username: this.username,
         buyer_sku_code: topUpData.productCode,
-        customer_no: '28928927282asigsauyafgascvtyac',
+        customer_no: customerNo,
         ref_id: topUpData.reference,
         trx_id,
         sign: signature,
       };
 
-      console.log('Sending to Digiflazz:', data); // Log the data for debugging
 
       // Send request to Digiflazz API
       const response = await fetch('https://api.digiflazz.com/v1/transaction', {
@@ -123,7 +109,6 @@ export class Digiflazz {
       });
 
       const result: TransactionType = await response.json();
-      console.log('Digiflazz response:', result);
 
       return result;
     } catch (error) {

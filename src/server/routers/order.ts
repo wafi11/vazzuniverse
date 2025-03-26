@@ -57,7 +57,7 @@ export const order = router({
         data: {
           orderId: orderId,
           harga: layanan.harga.toString(),
-          noPembeli: parseInt(input.userId),
+          noPembeli: input.userId,
           status: 'PENDING',
           metode: 'MANUAL',
           reference: paymentReference,

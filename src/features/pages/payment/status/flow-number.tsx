@@ -30,7 +30,6 @@ export function FlowProgress({ status }: { status: TRANSACTION_FLOW }) {
               key={step.id}
               className="flex flex-col items-center relative flex-1"
             >
-              {/* Left connector (not for first step) */}
               {index > 0 && (
                 <div className="absolute left-0 right-1/2 top-6">
                   <div
@@ -41,7 +40,6 @@ export function FlowProgress({ status }: { status: TRANSACTION_FLOW }) {
                 </div>
               )}
 
-              {/* Right connector (not for last step) */}
               {index < stepsTransaction.length - 1 && (
                 <div className="absolute left-1/2 right-0 top-6">
                   <div
@@ -52,7 +50,6 @@ export function FlowProgress({ status }: { status: TRANSACTION_FLOW }) {
                 </div>
               )}
 
-              {/* Step Circle */}
               <div
                 className={`w-12 h-12 rounded-full flex items-center justify-center z-10 ${circleColor}`}
               >

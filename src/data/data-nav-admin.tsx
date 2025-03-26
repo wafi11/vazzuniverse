@@ -5,6 +5,7 @@ import {
   Settings,
   ShoppingCart,
   Users,
+  Wallet,
 } from 'lucide-react';
 
 export interface NavItem {
@@ -76,6 +77,11 @@ export const dataNavAdmin: NavItem[] = [
         path: '/dashboard/product/voucher',
       },
     ],
+  },
+  {
+    nama : "Metode",
+    path : "/dashboard/methode",
+    icon : <Wallet className='size-4'/>
   },
   {
     nama: 'Pesanan Manual',

@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { RegisterAuth, UpdateUser } from '@/types/schema/auth';
 import { User } from '@/types/schema/user';
 import { hashSync } from 'bcryptjs';
+import { randomInt } from 'crypto';
 import { getServerSession } from 'next-auth';
 import { z } from 'zod';
 
@@ -13,9 +14,7 @@ export type CreateUserResult = {
   message: string;
   user?: Partial<User>;
 };
-function GenerateIdRandom(prefix?  : string) {
-    return `${prefix}-${new Date().getTime()}-${Math.random()}`
-}
+
 export default async function CreateUser({
   credentials,
 }: {
@@ -47,7 +46,7 @@ export default async function CreateUser({
         password: hashedPassword,
         role: 'Member',
             balance: 0,
-        apiKey : GenerateIdRandom(validatedData.username),
+        apiKey : randomInt(10).toString(),
       },
       select: {
         id: true,
@@ -63,9 +62,6 @@ export default async function CreateUser({
       user,
     };
   } catch (error) {
-    console.error(error);
-
-    // Handle Zod validation errors
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -73,7 +69,6 @@ export default async function CreateUser({
       };
     }
 
-    // Handle unique constraint or other database errors
     if (error instanceof Error) {
       return {
         success: false,

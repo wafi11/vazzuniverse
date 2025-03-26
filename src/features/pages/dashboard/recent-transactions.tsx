@@ -10,27 +10,39 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
+interface PaymentDetails { 
+  id: number; 
+  createdAt: string | null; 
+  updatedAt: string | null; 
+  status: string; 
+  harga: string; 
+  orderId: string; 
+  noPembayaran: string | null; 
+  noPembeli: string; 
+  metode: string; 
+  reference: string | null; 
+} 
 
 interface Transaction {
   id: number;
   orderId: string;
-  username?: string;
+  username: string | null;
   layanan: string;
   harga: number;
   status: string;
-  createdAt?: Date;
-  pembayaran?: {
-    metode: string;
-  };
+  createdAt?: string | null;
+  pembayaran: PaymentDetails | null
+  log?: string | null;
+  updatedAt?: string | null;
+  successReportSended?: boolean;
 }
 
 interface RecentTransactionsProps {
-  data: Transaction[];
+  data: Transaction[] | undefined
 }
 
 export function RecentTransactions({ data }: RecentTransactionsProps) {
-  // If no data, show empty state
-  if (!data.length) {
+  if (!data?.length) {
     return (
       <div className="h-[200px] flex items-center justify-center border rounded-md">
         <p className="text-muted-foreground">No transactions available</p>

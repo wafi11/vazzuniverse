@@ -46,9 +46,7 @@ export function DialogCreateCategory({
     bannerLoading: false,
   });
 
-  // Destructure for easier access
   const { isSubmitting } = loadingState;
-
   const {
     register,
     handleSubmit,
@@ -59,15 +57,15 @@ export function DialogCreateCategory({
   } = useForm<FormValuesCategory>({
     resolver: zodResolver(FormCategory),
     defaultValues: {
-      name: req?.name || '',
-      subName: req?.subName || '',
+      nama: req?.nama || '',
+      subNama: req?.subNama || '',
       brand: req?.brand || '',
       kode: req?.kode || '',
       serverId: req?.serverId || 0,
       status: req?.status || '',
       thumbnail: req?.thumbnail ?? '',
-      type: req?.type ?? '',
-      instruction: req?.instruction ?? '',
+      tipe: req?.tipe ?? '',
+      petunjuk: req?.petunjuk ?? '',
       ketLayanan: req?.ketLayanan ?? '',
       ketId: req?.ketId ?? '',
       placeholder1: req?.placeholder1 ?? '',
@@ -115,50 +113,15 @@ export function DialogCreateCategory({
 
   // Configure your mutations with proper invalidation
   const { mutate: create } = trpc.main.createCategory.useMutation({
-    onMutate: async (newCategory) => {
-      // Cancel any outgoing refetches so they don't overwrite our optimistic update
-      await queryClient.cancelQueries({
-        queryKey: [['main', 'getCategoriesAll']],
-      });
-
-      // Snapshot the previous value
-      const previousCategories = queryClient.getQueryData([
-        ['main', 'getCategoriesAll'],
-      ]);
-
-      // Optimistically update the cache
-      queryClient.setQueryData(
-        [['main', 'getCategoriesAll']],
-        (old: { data: Category[] }) => {
-          return {
-            ...old,
-            data: [...(old?.data || []), { ...newCategory, id: Date.now() }],
-          };
-        }
-      );
-
-      setLoadingState((prev) => ({ ...prev, isSubmitting: true }));
-
-      // Return the snapshotted value
-      return { previousCategories };
-    },
     onSuccess: () => {
       toast.success('Category created successfully');
       reset();
       setOpen(false);
     },
-    onError: (err, newCategory, context) => {
-      // If the mutation fails, use the context returned from onMutate to roll back
-      if (context?.previousCategories) {
-        queryClient.setQueryData(
-          [['main', 'getCategoriesAll']],
-          context.previousCategories
-        );
-      }
+    onError: (err, newCategory, context) => {      
       toast.error(`Error creating category: ${err.message}`);
     },
     onSettled: () => {
-      // Always refetch after error or success to sync with server state
       queryClient.invalidateQueries({
         queryKey: [['main', 'getCategoriesAll']],
       });
@@ -167,55 +130,21 @@ export function DialogCreateCategory({
   });
 
   const { mutate: update } = trpc.main.updateCategory.useMutation({
-    onMutate: async ({ data: categoryData, id }) => {
-      // Use the exact query key format with params
-      const queryKey = [['main', 'getCategoriesAll']];
-
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey });
-
-      // Snapshot the previous value
-      const previousData = queryClient.getQueryData(queryKey);
-
-      // Optimistically update the cache
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      queryClient.setQueryData(queryKey, (old: any) => {
-        // Check if old exists and has the right structure
-        if (!old) return previousData;
-
-        return {
-          ...old,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          data: old.data.map((item: any) =>
-            item.id === id ? { ...item, ...categoryData } : item
-          ),
-        };
-      });
-
-      return { previousData };
-    },
     onSuccess: () => {
       toast.success('Category updated successfully');
       reset();
       setOpen(false);
     },
-    onError: (err, variables, context) => {
-      // If the mutation fails, revert to the previous state
-      if (context?.previousData) {
-        const queryKey = [['main', 'getCategoriesAll']];
-        queryClient.setQueryData(queryKey, context.previousData);
-      }
+    onError: (err, variables, context) => {     
       toast.error(`Error updating category: ${err.message}`);
     },
     onSettled: () => {
-      // Always refetch after error or success to sync with server state
       queryClient.invalidateQueries({
         queryKey: [['main', 'getCategoriesAll']],
       });
     },
   });
 
-  // Simplified form submission handler with callback
   const onSubmit = async (data: FormValuesCategory) => {
     if (req) {
       update({ data: data, id: req.id });
@@ -226,7 +155,6 @@ export function DialogCreateCategory({
     }
   };
 
-  // If you need to manually trigger a refresh from somewhere else
   const refreshData = () => {
     queryClient.invalidateQueries({ queryKey: ['categories'] });
   };
@@ -253,15 +181,15 @@ export function DialogCreateCategory({
             <TabsContent value="basic" className="space-y-4 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Nama Kategori</Label>
+                  <Label htmlFor="nama">Nama Kategori</Label>
                   <Input
-                    id="name"
+                    id="nama"
                     placeholder="Masukkan nama kategori"
-                    {...register('name')}
+                    {...register('nama')}
                   />
-                  {errors.name && (
+                  {errors.nama && (
                     <p className="text-sm font-medium text-destructive">
-                      {errors.name.message}
+                      {errors.nama.message}
                     </p>
                   )}
                 </div>
@@ -271,11 +199,11 @@ export function DialogCreateCategory({
                   <Input
                     id="subName"
                     placeholder="Masukkan sub nama"
-                    {...register('subName')}
+                    {...register('subNama')}
                   />
-                  {errors.subName && (
+                  {errors.subNama && (
                     <p className="text-sm font-medium text-destructive">
-                      {errors.subName.message}
+                      {errors.subNama.message}
                     </p>
                   )}
                 </div>
@@ -315,10 +243,10 @@ export function DialogCreateCategory({
                 <div className="space-y-2">
                   <Label htmlFor="type">Tipe</Label>
                   <Select
-                    onValueChange={(value) => setValue('type', value)}
-                    value={watch('type')}
+                    onValueChange={(value) => setValue('tipe', value)}
+                    value={watch('tipe')}
                   >
-                    <SelectTrigger id="type">
+                    <SelectTrigger id="tipe">
                       <SelectValue placeholder="Pilih tipe kategori" />
                     </SelectTrigger>
                     <SelectContent>
@@ -327,9 +255,9 @@ export function DialogCreateCategory({
                       <SelectItem value="pulsa">Pulsa</SelectItem>
                     </SelectContent>
                   </Select>
-                  {errors.type && (
+                  {errors.tipe && (
                     <p className="text-sm font-medium text-destructive">
-                      {errors.type.message}
+                      {errors.tipe.message}
                     </p>
                   )}
                 </div>
@@ -462,11 +390,11 @@ export function DialogCreateCategory({
                   id="instruction"
                   placeholder="Masukkan petunjuk penggunaan (opsional)"
                   className="min-h-[100px]"
-                  {...register('instruction')}
+                  {...register('petunjuk')}
                 />
-                {errors.instruction && (
+                {errors.petunjuk && (
                   <p className="text-sm font-medium text-destructive">
-                    {errors.instruction.message}
+                    {errors.petunjuk.message}
                   </p>
                 )}
               </div>

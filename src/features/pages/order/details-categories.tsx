@@ -93,7 +93,6 @@ export default function DetailsCategories({ name }: { name: string }) {
 
               <PaymentsSection
                 amount={selectPlans?.harga as number}
-                productDetails={selectPlans}
               />
             </div>
           </div>

@@ -17,7 +17,6 @@ export async function CheckNickName(
     throw new Error('Invalid request data');
   }
 
-  console.log('Request data:', request);
 
   let url = `${BASE_URL_VALIDATE_NICKNAME}/default?id=${request.userId}`;
 
@@ -64,7 +63,6 @@ export async function CheckNickName(
     });
 
     const data = await response.json();
-    console.log(data);
     return {
       success: data.success || false,
       game: request.type,

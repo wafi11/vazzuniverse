@@ -22,7 +22,6 @@ export function MostPurchases({ data }: { data: FindMostPurchaseProps[] }) {
       minimumFractionDigits: 0,
     }).format(amount);
   };
-console.log(data)
   // Function to determine status badge color
   const getStatusColor = (status: string) => {
     switch (status.toUpperCase()) {

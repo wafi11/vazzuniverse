@@ -23,7 +23,7 @@ export const adminStats = publicProcedure.query(async ({ ctx }) => {
     // Get successful transactions
     const successfulTransactions = await ctx.prisma.pembelian.count({
       where: {
-        status: TRANSACTION_FLOW.SUCCESS
+        status: "SUCCESS"
       }
     });
     

@@ -49,6 +49,17 @@ export const voucherSchema = z.object({
   updatedAt: z.date().optional(),
 });
 
+export function convertToVoucherType(input: any) {
+  return {
+    ...input,
+    startDate: input.startDate ? new Date(input.startDate) : new Date(),
+    expiryDate: input.expiryDate ? new Date(input.expiryDate) : new Date(),
+    usageCount: input.usageCount ?? 0,
+    isForAllCategories: input.isForAllCategories ?? false,
+    isActive: input.isActive ?? true,
+  };
+}
+
 // Schema with additional validation rules
 export const voucherValidationSchema = voucherSchema
   .refine(
@@ -155,5 +166,7 @@ export type Voucher = z.infer<typeof voucherSchema>;
 export type CreateVoucherInput = z.infer<typeof createVoucherSchema>;
 export type UpdateVoucherInput = z.infer<typeof updateVoucherSchema>;
 export type VoucherFilter = z.infer<typeof voucherFilterSchema>;
+
+
 
 

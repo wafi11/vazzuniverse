@@ -1,16 +1,19 @@
 export interface PaymentMethod {
-    id: number;
-    name: string;
-    images: string;
-    code: string;
-    keterangan: string;
-    type: string;
-    paymentType: string | null;
-    paymentCodeTripay: string | null;
-    createdAt: string;
-    updatedAt: string;
-    min: number | null;
-    max: number | null;
+  name: string;
+  id: number;
+  tipe: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+  code: string;
+  images: string;
+  keterangan: string;
+  min: number | null;
+  typeTax: string | null;
+  taxAdmin: number | null;
+  minExpired: number | null;
+  maxExpired: number | null;
+  max: number | null;
+  isActive: boolean
   }
   
   export type PaymentDetails = {

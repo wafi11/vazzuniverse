@@ -82,15 +82,13 @@ export async function sendAdminNotification({
       .replace('{{orderId}}', orderData.orderId || '');
 
     const response = await fonteClient.sendWhatsAppMessage({
-      to: process.env.NOMOR_ADMIN as string,
+      to: process.env.NEXT_PUBLIC_NOMOR_ADMIN as string,
       message: formattedMessage,
       type: 'text',
     });
 
-    console.log('Message successfully sent to admin:', response);
     return response;
   } catch (error) {
-    console.error('Failed to send message to admin:', error);
     throw error;
   }
 }
@@ -108,10 +106,8 @@ export async function handleOrderStatusChange({
     // Send notification to admin
     await sendAdminNotification({ orderData });
 
-    console.log('All notifications sent for order:', orderData.orderId);
     return true;
   } catch (error) {
-    console.error('Error handling order status change:', error);
     throw error;
   }
 }

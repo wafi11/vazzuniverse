@@ -46,8 +46,7 @@ export function PesananManual() {
         statusFilter={statusFilter}
       />
 
-      {/* Table and pagination */}
-  
+      
     </main>
   );
 }

@@ -152,34 +152,7 @@ export function Sidebar({ open, onClose, user }: SidebarProps) {
           </nav>
         </div>
 
-        <div className="p-4 border-t">
-          {user ? (
-            <Button
-              variant="outline"
-              className="w-full justify-start bg-white text-black"
-              size="sm"
-              onSelect={(e) => {
-                e.preventDefault();
-                signOut({ callbackUrl: '/' });
-              }}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Keluar
-            </Button>
-          ) : (
-            <Link href={'/auth/login'}>
-            <Button
-              variant="outline"
-              className="w-full justify-start bg-white text-black"
-              size="sm"
-              
-              >
-              <LogIn className="mr-2 h-4 w-4" />
-              Masuk
-            </Button>
-              </Link>
-          )}
-        </div>
+       
       </div>
     </div>
   );

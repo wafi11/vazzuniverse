@@ -66,7 +66,6 @@ export function DialogPayment({ amount }: { amount: number }) {
         return;
       }
 
-      // For games that need server ID but it's not provided
       if (requiresValidation && name === 'mobile-legend' && !serverID) {
         setError('Server ID is required for this game');
         return;
@@ -82,7 +81,6 @@ export function DialogPayment({ amount }: { amount: number }) {
           userId: userID,
           serverId: serverID as string,
         });
-        console.log(nicknameResult)
         if (nicknameResult.success) {
           setNicknameData(nicknameResult.name || 'account ditemukan');
         } else {
@@ -128,7 +126,6 @@ export function DialogPayment({ amount }: { amount: number }) {
       if (response.success) {
         if (response.paymentUrl) {
           setPaymentUrl(response.paymentUrl);
-          console.log(response.paymentUrl)
           window.open(response.paymentUrl, '_blank');
         }
 
@@ -139,17 +136,15 @@ export function DialogPayment({ amount }: { amount: number }) {
         setServerId(null);
         setUserId(null);
 
-        toast.success('Payment initiated successfully!');
+        toast.success('Payment create successfully!');
       }
     } catch (err) {
-      toast.error(`Payment error: ${err}`);
       setError('Terjadi kesalahan. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Determine if payment should be allowed to proceed
   const isPaymentDisabled =
     isLoading ||
     !noWa ||
@@ -184,8 +179,7 @@ export function DialogPayment({ amount }: { amount: number }) {
               <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-blue-900/50">
                 <Image
                   src={
-                    categories.thumbnail ||
-                    '/placeholder.svg?height=48&width=48'
+                    categories.thumbnail
                   }
                   alt={categories.nama}
                   fill
